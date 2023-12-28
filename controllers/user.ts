@@ -28,12 +28,14 @@ const addUser: Function = async (req: IncomingMessage, res: ServerResponse) => {
   const reqBody = await bindBodyOrError(req, res, "name", "email", "birth_date");
   if (reqBody == null) return;
 
-  if (!dbCon.addUser(
+  const err: Error | null = dbCon.addUser(
     reqBody['name'],
     reqBody['email'],
     reqBody['birth_date'],
-  )) {
-    sendError(res, 503, "There is a problem with the server, please try again later.");
+  );
+
+  if (err != null) {
+    sendError(res, 409, err.message);
     return;
   };
   sendSuccess(res, {
@@ -58,15 +60,21 @@ const updateUserById: Function = async (req: IncomingMessage, res: ServerRespons
   const reqBody = await bindBodyOrError(req, res, "id", "name", "email", "birth_date");
   if (reqBody == null) return;
 
-  const result: boolean = dbCon.updateUserById(
+  const result: Error | null = dbCon.updateUserById(
     reqBody['id'],
     reqBody['name'],
     reqBody['email'],
     reqBody['birth_date']
   );
-  if (!result) {
-    sendError(res, 400, "Invalid User ID, please check.");
-    return;
+  if (result != null) {
+    switch (result.message) {
+      case "409":
+        sendError(res, 409, "New email you input are already existed, please use another email.");
+        return;
+        case "404":
+        sendError(res, 404, "Invalid User ID, please check.");
+        return;
+    }
   }
 
   sendSuccess(res, {
