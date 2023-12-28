@@ -25,6 +25,12 @@ const bindBodyOrError: Function = async (req: http.IncomingMessage, res: http.Se
     case 'POST':
       body = JSON.parse(await bodyBuffer);
       break;
+    case 'PUT':
+      body = JSON.parse(await bodyBuffer);
+      break;
+    case 'DELETE':
+      body = JSON.parse(await bodyBuffer);
+      break;
   }
 
   let invalidParams: Array<string> = [];
