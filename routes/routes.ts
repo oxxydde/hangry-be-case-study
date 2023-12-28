@@ -1,17 +1,19 @@
 import http from 'http';
+import url from 'url';
 import ping from '../controllers/ping';
-import jsonTest from '../controllers/jsontest';
-const {sendError, sendSuccess} = require('../utils/sendResponse');
+import handleUser from '../controllers/user';
+const {sendError} = require('../utils/sendResponse');
 
 export function handleRoute(req: http.IncomingMessage, res: http.ServerResponse) {
-  const path = req.url;
+  const uri = url.parse(req.url!);
   // routes here
-  switch (path) {
+  switch (uri.pathname) {
     case '/ping':
       ping(req, res);
       break;
-    case '/jsontest':
-      jsonTest(req, res);
+    case '/user':
+      // Handle user here, CRUD will be based on HTTP Method
+      handleUser(req, res);
       break;
     default:
       sendError(res, 404, "Endpoint not found.")
