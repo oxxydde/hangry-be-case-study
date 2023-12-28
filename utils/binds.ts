@@ -1,4 +1,5 @@
 import http from 'http';
+import url from 'url';
 const {sendSuccess, sendError} = require('../utils/sendResponse');
 
 const bindBodyOrError: Function = async (req: http.IncomingMessage, res: http.ServerResponse, ...params: string[]): Promise<Object | null> => {
@@ -18,6 +19,7 @@ const bindBodyOrError: Function = async (req: http.IncomingMessage, res: http.Se
   let body: any = {};
   switch (req.method) {
     case 'GET':
+      body = url.parse(req.url!, true).query;
       // get params later
       break;
     case 'POST':
